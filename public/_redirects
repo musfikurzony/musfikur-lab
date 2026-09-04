@@ -1,0 +1,11 @@
+# Cloudflare Pages redirects.
+#
+# A static export has no server, so next.config redirects() would do nothing.
+# Cloudflare reads this file from the deployed output instead.
+#
+# "Projects" and "AI Lab" are one destination on the new site. This keeps any
+# /projects link already shared working.
+
+/projects      /lab/      301
+/projects/*    /lab/      301
+/tool/*        /lab/      301
