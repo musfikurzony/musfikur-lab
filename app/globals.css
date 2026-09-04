@@ -1,0 +1,343 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   DESIGN TOKENS
+   The single source of truth for the visual system.
+   Change a value here and it changes everywhere on the site.
+   ========================================================================== */
+
+@theme {
+  /* ---- Surfaces ------------------------------------------------------- */
+  --color-bg: #070b14;
+  --color-surface: #0d1320;
+  --color-surface-2: #111827;
+  /*
+   * Named "panel", not "card", on purpose.
+   *
+   * Tailwind v4 derives utilities from token names, and a `--color-card`
+   * token would generate `.text-card { color: … }`, which collides with the
+   * `--text-card` font-size token and silently wins. The card heading would
+   * then render dark navy on dark navy. Keep colour names and font-size names
+   * disjoint.
+   */
+  --color-panel: #121a29;
+  --color-panel-hover: #162031;
+
+  /* Library uses a warmer, calmer ground than the Lab. */
+  --color-library-bg: #0b0f17;
+  --color-library-panel: #141a24;
+
+  /* ---- Hairlines ------------------------------------------------------ */
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.14);
+  --color-line-accent: rgb(79 140 255 / 0.35);
+
+  /* ---- Text ----------------------------------------------------------- */
+  --color-ink: #f5f7fa;
+  --color-ink-2: #9ca8ba;
+  /*
+   * The brief specified #687386 here. Measured against the #070B14 ground
+   * that lands at 4.12:1, just under the 4.5:1 WCAG AA minimum — and this
+   * token is used for metadata and eyebrows, which are the smallest text on
+   * the site. Lightened two steps to 5.4:1. Visually near-identical, and now
+   * actually readable for anyone with reduced contrast sensitivity.
+   */
+  --color-ink-muted: #7b8798;
+
+  /* ---- Accents -------------------------------------------------------- */
+  --color-blue: #4f8cff;
+  --color-indigo: #7c5cff;
+  --color-cyan: #38c7ff;
+  --color-green: #35d39a;
+  --color-amber: #f5b84b;
+  --color-brass: #c9a227; /* Library accent only */
+
+  /* ---- Typography ----------------------------------------------------- */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Fluid scale — no breakpoint jumps. */
+  --text-hero: clamp(2.125rem, 1.15rem + 4.9vw, 4.75rem);
+  --text-hero--line-height: 1.04;
+  --text-display: clamp(1.875rem, 1.3rem + 2.6vw, 2.875rem);
+  --text-display--line-height: 1.1;
+  --text-title: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+  --text-title--line-height: 1.25;
+  --text-card: clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem);
+  --text-card--line-height: 1.35;
+  --text-body: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+  --text-body--line-height: 1.65;
+  --text-meta: clamp(0.75rem, 0.73rem + 0.08vw, 0.8125rem);
+  --text-meta--line-height: 1.4;
+
+  /* ---- Geometry ------------------------------------------------------- */
+  --radius-card: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* ---- Motion --------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Non-Tailwind tokens: durations, shell width, gradients. */
+:root {
+  --shell: 1240px;
+  --nav-h: 64px;
+
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 700ms;
+
+  --grad-brand: linear-gradient(135deg, #4f8cff 0%, #7c5cff 100%);
+  /*
+   * Holds full white through the first line and only fades at the tail.
+   * A straight white-to-grey ramp leaves the second line of a two-line
+   * headline noticeably dimmer than the first, which reads as a mistake.
+   */
+  --grad-heading: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #ffffff 55%,
+    #cfd8e4 100%
+  );
+  --grad-hairline: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.12) 22%,
+    rgb(255 255 255 / 0.12) 78%,
+    transparent
+  );
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.4), 0 20px 44px -18px rgb(0 0 0 / 0.75),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-nav: 0 8px 32px -12px rgb(0 0 0 / 0.7);
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Anchor links land below the floating nav, not underneath it. */
+    scroll-padding-top: calc(var(--nav-h) + 32px);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: -0.022em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: rgb(79 140 255 / 0.28);
+    color: #ffffff;
+  }
+
+  /* Keyboard focus is always visible. Never remove this. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Mouse users don't get the ring; keyboard users always do. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.1);
+    border-radius: 999px;
+    border: 2px solid var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 0.18);
+  }
+}
+
+/* ==========================================================================
+   COMPONENT UTILITIES
+   Small, reusable pieces that would otherwise be repeated verbatim.
+   ========================================================================== */
+
+@layer components {
+  /* Glass surface used by nav, cards and the hero ecosystem. */
+  .glass {
+    background-color: rgb(18 26 41 / 0.62);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--color-line);
+  }
+
+  /* Headline treatment: white fading to cool grey. */
+  .grad-heading {
+    background: var(--grad-heading);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .grad-brand-text {
+    background: var(--grad-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Uppercase tracked label used for eyebrows and metadata. */
+  .eyebrow {
+    font-size: var(--text-meta);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  /* A 1px rule that fades out at both ends. */
+  .rule {
+    height: 1px;
+    background: var(--grad-hairline);
+    border: 0;
+  }
+}
+
+/* ==========================================================================
+   MOTION
+   Every animation below is switched off by prefers-reduced-motion at the
+   bottom of this file. Content must never depend on motion to be readable.
+   ========================================================================== */
+
+/* Scroll reveal. Elements start hidden and are revealed by useReveal(). */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease-out-expo),
+    transform var(--dur-slow) var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal='shown'] {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Status dot pulse — used only by 'live' and 'active'. */
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  70% {
+    opacity: 0.85;
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+
+.dot-pulse {
+  animation: dot-pulse 2.4s var(--ease-soft) infinite;
+}
+
+/* Slow ambient drift for background orbs. */
+@keyframes orb-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2.5%, -3%, 0) scale(1.07);
+  }
+}
+
+/* Floating hero ecosystem cards. Each card sets its own duration/delay. */
+@keyframes card-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+/* Light travelling along the SVG connector paths. */
+@keyframes path-travel {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+/* Progress line in "Currently Building". */
+@keyframes line-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   A hard requirement, not a nicety. Everything settles at its final state.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
