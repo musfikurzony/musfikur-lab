@@ -146,16 +146,24 @@ If a Drive file is shared as "Anyone with the link", then anyone with the link c
 
 ## Deploying to Cloudflare Pages
 
-Connect the GitHub repository, then:
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full walkthrough**, including the exact dashboard settings, what to check after the first deploy, and what to do when a build fails.
+
+The short version — connect the GitHub repository, then:
 
 - **Framework preset:** Next.js (Static HTML Export)
 - **Build command:** `npm run build`
 - **Output directory:** `out`
-- **Node version:** 20 or newer
+- **Environment variable:** `NODE_VERSION` = `20` *(required — the default is too old)*
 
 Every push to the main branch rebuilds and deploys, usually in under a minute.
 
+To deploy from your own machine instead: `npx wrangler login`, then `npm run deploy`.
+
 `public/_redirects` keeps old `/projects` and `/tool/...` links working. `public/_headers` sets security headers and long cache lifetimes for hashed assets.
+
+### This site must stay static
+
+No Worker, no serverless function, no server-side rendering. `npm run check:static` verifies that before every deploy. The notes at the top of `wrangler.toml` list the Next.js features that would break it.
 
 ---
 

@@ -1,0 +1,39 @@
+# ============================================================================
+# ALTERNATIVE CONFIG — only if your Cloudflare project is a WORKERS project
+# ============================================================================
+#
+# You need this file ONLY if Settings → Build shows a "Deploy command" field.
+# That means Cloudflare created a Workers project rather than a Pages project,
+# and a Workers project cannot read `pages_build_output_dir`.
+#
+# TO USE IT:
+#   1. Delete wrangler.toml
+#   2. Rename this file to wrangler.toml
+#   3. In Cloudflare → Settings → Build, set:
+#        Build command:   npm run build
+#        Deploy command:  npx wrangler deploy
+#   4. Commit and push
+#
+# This still runs NO server code. There is no `main` key, so no Worker script
+# exists — Cloudflare serves the files in ./out directly from the edge, the
+# same as Pages does. `_headers` and `_redirects` are honoured either way.
+#
+# If your project is a Pages project (no "Deploy command" field), ignore this
+# file entirely and keep the wrangler.toml that ships with the repo.
+# ============================================================================
+
+name = "musfikur-lab"
+compatibility_date = "2026-09-04"
+
+[assets]
+# The folder `npm run build` produces.
+directory = "./out"
+
+# Serve our designed 404 page instead of a bare Cloudflare error.
+not_found_handling = "404-page"
+
+# ----------------------------------------------------------------------------
+# Environment variables are NOT set here — this file is committed to Git, and
+# a secret in a committed file is not a secret. Set them in the Cloudflare
+# dashboard under Settings → Variables and Secrets. See .env.example.
+# ----------------------------------------------------------------------------
