@@ -1,0 +1,81 @@
+# ============================================================================
+# CLOUDFLARE CONFIGURATION — Workers Static Assets
+# ============================================================================
+#
+# This site deploys as PURE STATIC FILES. There is NO server code here.
+#
+# Note the absence of a `main` key. That is the important part: without it,
+# no Worker script exists and nothing executes on request. Cloudflare simply
+# serves the files in ./out from the edge — the same delivery Pages gives you,
+# on the same network, at the same cost.
+#
+# ----------------------------------------------------------------------------
+# WHY THIS FILE IS A WORKERS CONFIG AND NOT A PAGES CONFIG
+# ----------------------------------------------------------------------------
+#
+# Cloudflare's "Import a repository" flow now creates a WORKERS project rather
+# than a Pages project. You can tell which you have from the dashboard URL:
+#
+#   /workers/services/view/...   → Workers  (this config)
+#   /pages/view/...              → Pages    (see wrangler.pages.toml.example)
+#
+# A Workers project deploys with `npx wrangler deploy`, which needs `[assets]`.
+# It cannot read `pages_build_output_dir` — that key is Pages-only, and setting
+# it makes wrangler warn about the wrong command and then fail with
+# "Missing entry-point to Worker script or to assets directory".
+#
+# If you ever move to a real Pages project, swap in wrangler.pages.toml.example.
+#
+# ----------------------------------------------------------------------------
+# DASHBOARD SETTINGS THIS FILE EXPECTS
+# ----------------------------------------------------------------------------
+#
+#   Build command:    npm run build
+#   Deploy command:   npx wrangler deploy
+#   Root directory:   /
+#
+# ----------------------------------------------------------------------------
+# WHAT MUST NOT BE ADDED
+# ----------------------------------------------------------------------------
+#
+# Each of these needs a real server and would break this deployment model.
+# `output: 'export'` in next.config.ts makes most of them fail the build
+# rather than fail silently in production — that is deliberate:
+#
+#   • Route Handlers            app/**/route.ts
+#   • Server Actions            'use server'
+#   • Middleware                middleware.ts
+#   • Dynamic params without    generateStaticParams()
+#   • ISR / revalidate          export const revalidate = 60
+#   • Runtime cookies/headers   cookies(), headers()
+#   • next/image optimisation   (already disabled — we ship pre-sized WebP)
+#
+# If one is ever genuinely needed, that is an architecture decision to discuss
+# first, not something to work around here.
+# ============================================================================
+
+name = "musfikur-lab"
+compatibility_date = "2026-09-04"
+
+[assets]
+# The folder `npm run build` produces.
+directory = "./out"
+
+# Serve our own designed 404 page instead of a bare Cloudflare error.
+# `npm run build` writes it to out/404.html.
+not_found_handling = "404-page"
+
+# ----------------------------------------------------------------------------
+# ENVIRONMENT VARIABLES
+# ----------------------------------------------------------------------------
+#
+# Deliberately NOT set here. This file is committed to Git, and a secret in a
+# committed file is not a secret.
+#
+# The private Library's Supabase keys go in the Cloudflare dashboard under
+# Settings → Variables and Secrets, and in a local `.env.local` for
+# development. See .env.example.
+#
+# The site builds and deploys correctly with none of them set; the Library
+# simply reports that it is not yet activated.
+# ----------------------------------------------------------------------------
