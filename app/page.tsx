@@ -1,173 +1,116 @@
-import type { ProjectStatus } from '@/content/types';
-import { hero } from '@/content/site';
-import {
-  getAllProjects,
-  getFeaturedProjects,
-  getToolCount,
-  STATUS_LABELS,
-} from '@/lib/projects';
-import { Container } from '@/components/layout/Container';
+import Link from 'next/link';
+import { about, site } from '@/content/site';
 import { Section } from '@/components/layout/Section';
 import { Button } from '@/components/ui/Button';
-import { Pill, StatusBadge } from '@/components/ui/Badge';
-import { ProjectCard } from '@/components/project/ProjectCard';
-import { FeaturedCard } from '@/components/project/FeaturedCard';
+import { Hero } from '@/components/sections/Hero';
+import { StatsStrip } from '@/components/sections/StatsStrip';
+import { LatestBuilds } from '@/components/sections/LatestBuilds';
+import { FeaturedBento } from '@/components/sections/FeaturedBento';
+import { ProblemToProduct } from '@/components/sections/ProblemToProduct';
+import { CurrentlyBuilding } from '@/components/sections/CurrentlyBuilding';
+import { JourneyTimeline } from '@/components/sections/JourneyTimeline';
+import { AboutPillars } from '@/components/sections/AboutPillars';
+import { TechEcosystem } from '@/components/sections/TechEcosystem';
+import { MomentsPreview } from '@/components/sections/MomentsPreview';
+import { PhilosophyQuote } from '@/components/sections/PhilosophyQuote';
 
 /**
- * PHASE 2 REVIEW PAGE.
+ * The homepage.
  *
- * Not the real homepage — this exists so the card system can be looked at and
- * adjusted before it gets used in six places. Phase 3 replaces it with the
- * hero ecosystem, stats, Latest Builds, Featured bento, From Problem to
- * Product, Currently Building, previews and philosophy.
+ * Section order follows the visual hierarchy from your brief (§25, §50):
+ * who → what → the tools → how they get made → what's being built now →
+ * the story → the person → the personal side → the belief.
  *
- * Everything below renders from content/projects.ts. No project name, URL,
- * version or date appears anywhere in this file.
+ * This file composes; it does not contain content. Every section reads from
+ * content/. Sections whose data is empty remove themselves — the Moments
+ * preview and Currently Building both disappear rather than render a hollow
+ * frame.
  */
-
-const ALL_STATUSES: ProjectStatus[] = [
-  'live',
-  'active',
-  'beta',
-  'development',
-  'evolving',
-  'experiment',
-  'archived',
-];
-
 export default function HomePage() {
-  const projects = getAllProjects();
-  const featured = getFeaturedProjects();
-  const lead = featured[0];
-  const rest = projects.filter((project) => project.id !== lead?.id);
-
   return (
     <>
-      {/* ---- Compact hero, kept from Phase 1 ------------------------------ */}
-      <section className="relative flex min-h-[62vh] items-center pt-[var(--nav-h)]">
-        <Container>
-          <div className="max-w-3xl py-16">
-            <p className="eyebrow inline-flex items-center gap-2.5" data-reveal>
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="dot-pulse absolute inline-flex h-full w-full rounded-full bg-green" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green" />
-              </span>
-              {hero.eyebrow}
-            </p>
+      <Hero />
+      <StatsStrip />
+      <LatestBuilds />
+      <FeaturedBento />
+      <ProblemToProduct />
+      <CurrentlyBuilding />
 
-            <h1
-              className="grad-heading mt-6 text-hero font-bold"
-              data-reveal
-              style={{ '--reveal-delay': '80ms' } as React.CSSProperties}
-            >
-              {hero.headline}
-            </h1>
+      {/* Journey preview — three milestones, then the full page */}
+      <Section
+        eyebrow="THE STORY"
+        title="The Journey"
+        subtitle="How the work moved from small experiments to working systems."
+        headerAction={
+          <Button href="/journey" variant="secondary" arrow="right">
+            See the full journey
+          </Button>
+        }
+      >
+        <JourneyTimeline limit={3} />
+      </Section>
 
-            <p
-              className="mt-6 max-w-xl text-body text-ink-2"
-              data-reveal
-              style={{ '--reveal-delay': '160ms' } as React.CSSProperties}
-            >
-              {hero.supporting}
-            </p>
+      {/* About preview — the three pillars, then the full page */}
+      <Section
+        eyebrow="WHO IS BEHIND IT"
+        title={about.title}
+        subtitle={about.intro}
+        headerAction={
+          <Button href="/about" variant="secondary" arrow="right">
+            More about me
+          </Button>
+        }
+      >
+        <AboutPillars />
+      </Section>
 
-            <div
-              className="mt-9 flex flex-wrap items-center gap-3"
-              data-reveal
-              style={{ '--reveal-delay': '240ms' } as React.CSSProperties}
-            >
-              <Button href="#cards" variant="primary" size="lg" arrow="right">
-                {hero.primaryCta.label}
-              </Button>
-              <Button href={hero.secondaryCta.href} variant="secondary" size="lg">
-                {hero.secondaryCta.label}
-              </Button>
-            </div>
+      <Section
+        spacing="tight"
+        eyebrow="THE TOOLKIT"
+        title="Tools Behind the Lab"
+        subtitle="What these applications are actually built with."
+      >
+        <TechEcosystem />
+      </Section>
+
+      <MomentsPreview />
+      <PhilosophyQuote />
+
+      {/* Closing call to action */}
+      <Section spacing="tight">
+        <div
+          className="relative overflow-hidden rounded-[var(--radius-lg)] border border-line bg-[rgb(18_26_41/0.55)] px-7 py-12 text-center sm:px-10 sm:py-16"
+          data-reveal
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-0 h-64 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              background:
+                'radial-gradient(circle at center, rgb(79 140 255 / 0.22) 0%, transparent 68%)',
+            }}
+          />
+          <h2 className="grad-heading relative text-display font-semibold">
+            Have a look around the lab
+          </h2>
+          <p className="relative mx-auto mt-4 max-w-md text-body text-ink-2">
+            Every tool here started as something that was taking too long by hand.
+          </p>
+          <div className="relative mt-8 flex flex-wrap justify-center gap-3">
+            <Button href="/lab" variant="primary" size="lg" arrow="right">
+              Explore My AI Lab
+            </Button>
+            <Button href="/about" variant="secondary" size="lg">
+              About {site.name.split(' ')[0]}
+            </Button>
           </div>
-        </Container>
-      </section>
-
-      {/* ---- The large bento card ---------------------------------------- */}
-      <Section
-        id="cards"
-        eyebrow="PHASE 2 — REVIEW"
-        title="The card system"
-        subtitle={`All ${getToolCount()} tools, rendered from content/projects.ts. Launch URLs, versions, dates and technologies are empty because you have not supplied them — the cards show what is true and omit the rest.`}
-      >
-        <div data-reveal>{lead && <FeaturedCard project={lead} />}</div>
-      </Section>
-
-      {/* ---- The standard grid ------------------------------------------- */}
-      <Section
-        spacing="tight"
-        eyebrow="STANDARD CARD"
-        title="The grid"
-        subtitle="Used in the AI Lab and Latest Builds. Three columns on desktop, one on mobile."
-      >
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {rest.map((project, i) => (
-            <div
-              key={project.id}
-              data-reveal
-              style={{ '--reveal-delay': `${i * 60}ms` } as React.CSSProperties}
-            >
-              <ProjectCard project={project} />
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ---- Reference: every badge state --------------------------------- */}
-      <Section
-        spacing="tight"
-        eyebrow="REFERENCE"
-        title="Status badges"
-        subtitle="Every state a tool can be in. Live and Active pulse gently; nothing else moves."
-      >
-        <div
-          className="flex flex-wrap items-center gap-3 rounded-[var(--radius-card)] border border-line bg-[rgb(18_26_41/0.4)] p-6"
-          data-reveal
-        >
-          {ALL_STATUSES.map((status) => (
-            <StatusBadge key={status} status={status} />
-          ))}
-        </div>
-
-        <div
-          className="mt-5 grid gap-4 sm:grid-cols-3"
-          data-reveal
-          style={{ '--reveal-delay': '80ms' } as React.CSSProperties}
-        >
-          {[
-            {
-              title: 'Open Tool →',
-              body: 'Shown when a tool has a public URL. Opens the application in a new tab.',
-            },
-            {
-              title: 'Open Tool → with 🔒',
-              body: 'The application has its own login. This site never asks for those credentials.',
-            },
-            {
-              title: 'View Project →',
-              body: 'No public URL yet. The site will not invent a launch button it cannot honour.',
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="rounded-[var(--radius-card)] border border-line bg-[rgb(18_26_41/0.4)] p-5"
-            >
-              <p className="text-[0.875rem] font-semibold text-ink">{item.title}</p>
-              <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-2">
-                {item.body}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 flex flex-wrap gap-2" data-reveal>
-          <Pill tone="quiet">Version chip appears once you add version history</Pill>
-          <Pill tone="quiet">NEW and UPDATED appear once dates exist</Pill>
-          <Pill tone="quiet">Every card above is one record in one file</Pill>
+          <p className="relative mt-8 text-[0.8125rem] text-ink-muted">
+            Or read{' '}
+            <Link href="/journey" className="text-ink-2 underline underline-offset-4 hover:text-ink">
+              how it developed
+            </Link>
+            .
+          </p>
         </div>
       </Section>
     </>
