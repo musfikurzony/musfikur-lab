@@ -157,6 +157,18 @@ Every push to the main branch rebuilds and deploys, usually in under a minute.
 
 `public/_redirects` keeps old `/projects` and `/tool/...` links working. `public/_headers` sets security headers and long cache lifetimes for hashed assets.
 
+### Deploying from the CLI
+
+`wrangler.jsonc` configures this project (`name`, `compatibility_date`, `pages_build_output_dir`) so [Wrangler](https://developers.cloudflare.com/workers/wrangler/) can build and preview it locally:
+
+```bash
+npx wrangler login   # once, to authenticate with Cloudflare
+npm run pages:dev     # build + serve /out locally via Cloudflare's runtime
+npm run deploy        # build + wrangler pages deploy out
+```
+
+The Pages project name in `wrangler.jsonc` must match the project connected in the Cloudflare dashboard (or a new project of that name is created on first `deploy`).
+
 ---
 
 ## If a build fails
