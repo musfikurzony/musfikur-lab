@@ -2,7 +2,7 @@
 
 The personal website: portfolio, AI Lab launchpad, Moments archive and private Library.
 
-Built with Next.js 15 and exported as static HTML. Hosted on Cloudflare Pages.
+Built with Next.js 15 and exported as static HTML. Hosted on Cloudflare.
 
 ---
 
@@ -124,7 +124,7 @@ create policy "authenticated read"
 
 **3. Add your account** under Authentication → Users. There is no public sign-up.
 
-**4. Set the environment variables** in Cloudflare Pages → Settings → Environment variables (and in a local `.env.local` for development). See `.env.example`.
+**4. Set the environment variables** in the Cloudflare dashboard under Settings → Variables and Secrets (and in a local `.env.local` for development). See `.env.example`.
 
 **5. Add your books and folders** as rows in `library_items`.
 
@@ -144,16 +144,20 @@ If a Drive file is shared as "Anyone with the link", then anyone with the link c
 
 ---
 
-## Deploying to Cloudflare Pages
+## Deploying to Cloudflare
 
 **See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full walkthrough**, including the exact dashboard settings, what to check after the first deploy, and what to do when a build fails.
 
-The short version — connect the GitHub repository, then:
+The short version — connect the GitHub repository, then set the build settings.
 
-- **Framework preset:** Next.js (Static HTML Export)
+Cloudflare's "Import a repository" flow creates a **Workers** project, which is what this repo ships configured for:
+
 - **Build command:** `npm run build`
-- **Output directory:** `out`
-- **Environment variable:** `NODE_VERSION` = `20` *(required — the default is too old)*
+- **Deploy command:** `npx wrangler deploy`
+
+If yours is a **Pages** project instead (dashboard URL contains `/pages/view/`), use `npm run build` with output directory `out`, and swap in `wrangler.pages.toml.example`.
+
+Cloudflare will pre-fill a Next.js build command of its own. Replace it — its guess assumes a server, and this site has none.
 
 Every push to the main branch rebuilds and deploys, usually in under a minute.
 
