@@ -30,11 +30,16 @@ export const site = {
   descriptor: 'AI Innovation Lab',
 
   /**
-   * TODO — set your final domain before launch.
-   * Used for canonical URLs, the sitemap and social preview cards.
-   * Until then the sitemap still builds; the URLs are just placeholders.
+   * The live address of this site.
+   *
+   * Used for canonical URLs, the sitemap and the social preview card — all of
+   * which must be absolute URLs, so this has to be correct or a shared link
+   * previews with a broken image and search engines see the wrong addresses.
+   *
+   * CHANGE THIS the day you connect a custom domain, e.g.
+   * 'https://musfikurrahman.com'. No trailing slash.
    */
-  url: 'https://musfikurrahman.pages.dev',
+  url: 'https://musfikur-lab.musfikurzony.workers.dev',
 
   /** Your positioning line. Changing this one string changes it everywhere. */
   role: 'Manager, Merchandising · AI Builder · Problem Solver',
